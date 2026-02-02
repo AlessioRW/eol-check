@@ -1,0 +1,9 @@
+
+config:
+  - id: "go-main"
+    product: "golang"
+    path: "./go.mod"
+    method: "file"
+  - id: "go-random"
+    product: "golang"
+    method: "command"
