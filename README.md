@@ -1,8 +1,8 @@
-# Am I EOL
+# eol-check
 
 ## Overview
 
-This is a Golang project that works on-top of the [endolflife.date](https://endoflife.date/) API. Checks are implemented per product available through the API, allowing for multiple methods of checking.
+This is a config-driven Golang project that works on-top of the [endolflife.date](https://endoflife.date/) API. Checks are implemented per product available through the API, and allows for multiple implementations of checking called 'methods'.
 
 ## Usesage Guide
 

@@ -10,7 +10,7 @@ import (
 
 const API_URL = "https://endoflife.date/api/v1"
 
-func DoEolCheck(product string, version string) (*EolCheck, error) {
+func GetEolData(id string, product string, version string) (*EolCheck, error) {
 
 	res, err := http.Get(fmt.Sprintf("%v/products/%v", API_URL, product))
 	if err != nil {

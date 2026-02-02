@@ -1,51 +1,26 @@
 package main
 
 import (
-	"eol-checker/internal/api"
 	"eol-checker/internal/config"
-	"eol-checker/internal/output"
-	"eol-checker/internal/products/golang"
-	"fmt"
+	"eol-checker/internal/handler"
 	"log/slog"
+	"os"
 )
 
-type Checker interface {
-	IsEol(c config.ProductConfig) (*api.EolCheck, error)
-}
-
-func getChecker(product string) Checker {
-	switch product {
-	case "golang":
-		return golang.GolangChecker{}
-	default:
-		return nil
-	}
-}
-
 func main() {
-	config, err := config.ParseConfig()
+	if len(os.Args) < 1 {
+		slog.Error("not enough arguments passed, required CONFIG_PATH")
+		os.Exit(1)
+	}
+	configPath := os.Args[1] // path to config file
+
+	config, err := config.ParseConfig(configPath)
 	if err != nil {
-		return
+		os.Exit(1)
 	}
 
-	eolResults := []*api.EolCheck{}
-
-	for _, product := range config.Config {
-		c := getChecker(product.Product)
-		if c == nil {
-			slog.Error(fmt.Sprintf("error in check: %v, product %v not recognised", product.Id, product.Product))
-			continue
-		}
-		eolData, err := c.IsEol(product)
-		if err != nil {
-			return
-		}
-
-		eolResults = append(eolResults, eolData)
-	}
-
-	err = output.WriteOut(eolResults)
+	err = handler.Run(config)
 	if err != nil {
-		return
+		os.Exit(1)
 	}
 }
