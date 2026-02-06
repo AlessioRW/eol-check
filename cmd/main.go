@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 1 {
+	if len(os.Args) < 2 {
 		slog.Error("not enough arguments passed, required CONFIG_PATH")
 		os.Exit(1)
 	}

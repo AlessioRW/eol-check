@@ -6,6 +6,9 @@ import (
 	"eol-checker/internal/output"
 	"eol-checker/internal/products"
 	"eol-checker/internal/products/golang"
+	"errors"
+	"fmt"
+	"log/slog"
 )
 
 func Run(config *config.EolConfig) error {
@@ -13,13 +16,18 @@ func Run(config *config.EolConfig) error {
 	for _, product := range config.Config {
 		p := switchProduct(product.Product)
 
-		checkFunc := p.GetMethods()[product.Method]
+		checkFunc, ok := p.GetMethods()[product.Method]
+		if !ok {
+			errMsg := fmt.Sprintf("method %v does not exist on prodcut %v", product.Method, product.Product)
+			slog.Error(errMsg)
+			return errors.New(errMsg)
+		}
 		version, err := checkFunc.Run(product.Id, []any{product.Path})
 		if err != nil {
 			return err
 		}
 
-		vData, err := api.GetEolData(product.Id, product.Product, version)
+		vData, err := api.Query(product.Id, product.Product, version)
 		if err != nil {
 			return err
 		}

@@ -10,7 +10,11 @@ import (
 
 const API_URL = "https://endoflife.date/api/v1"
 
-func GetEolData(id string, product string, version string) (*EolCheck, error) {
+func Query(id string, product string, version string) (*EolCheck, error) {
+	EolInfo := &EolCheck{
+		CheckId: id,
+		Product: product,
+	}
 
 	res, err := http.Get(fmt.Sprintf("%v/products/%v", API_URL, product))
 	if err != nil {
@@ -36,8 +40,6 @@ func GetEolData(id string, product string, version string) (*EolCheck, error) {
 	if err != nil {
 		slog.Error("error unmarshalling api response", "error", err)
 	}
-
-	EolInfo := &EolCheck{}
 
 	for i, versionData := range eolData.Result.Releases {
 		if i == 0 {
