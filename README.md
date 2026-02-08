@@ -11,16 +11,19 @@ The project takes a `.yaml` file, which the path to is passed as an argument whe
 #### Example config
 ```yaml
 config:
-  - id: "go-main" # id of the check
+  - id: "golang file check" # id of the check
     product: "golang" # what product is being checked
-    path: "./go.mod" # path where to do check
     method: "file" # method of checking
-  - id: "go-random"
-    product: "golang"
-    method: "command"
+    args: # array of arguments to pass to check, specific for each method
+      - "./go.mod"
+  - id: "aws glue"
+    product: "aws_glue"
+    method: "sdk"
+    args: 
+      - "glue-job-name" 
 ```
 
-> Note: This is specifically for only running checks in a Golang project, though multiple products **can** be listed in the same config file, and a product may have different fields provided. Please check the specific README files for each product in the [products directory](./internal/products/)
+> Note: This is specifically for only running checks in a Golang project, though multiple products **can** be listed in the same config file, and a product may have different fields provided. Please check the specific README files for each product in the [product's directory](./internal/products/)
 
 
 **ID** - 
@@ -29,12 +32,11 @@ ID to store check results against, and can be any unique value. This is required
 **Product** - 
 What product, language, serivce, etc, is being checked in the EOL API. See a list of available [here](https://endoflife.date/). This is required for all products
 
-**Path** - 
-Path to perform the check in.
-
 **Method** - 
 Method of checking for specific product. This is required for all products. Refer to product README for available methods and required configs.
 
+**Args** - 
+Array of arguments to pass into check. These are specific to each method and are documented in the product's directory [PRODUCT].md file
 
 #### Output
 
@@ -43,8 +45,8 @@ Once run, a file named `eol-output.csv` will be produced as such. Here is one ge
 #### Example Output
 ```csv
 id,product,version,is_eol,eol_date,maintained,lts
-go-main,golang,1.24,false,N/A,true,false
-go-random,golang,1.24,false,N/A,true,false
+go-file,golang,1.11,true,2019-09-03,false,false
+glue-sdk,aws_glue,5.0,false,N/A,true,false
 ```
 
 **id** - 
