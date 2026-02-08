@@ -11,7 +11,7 @@ type Product struct {
 func (g Product) GetMethods() map[string]products.Method {
 	return map[string]products.Method{
 		"file":    golang_methods.File{},
-		"command": golang_methods.Command{},
+		"command": golang_methods.CLI{},
 	}
 }
 

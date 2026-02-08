@@ -1,5 +1,9 @@
 package api
 
+type ClientInterface interface {
+	Query(product string) ([]byte, error)
+}
+
 type Version struct {
 	VersionNum   string
 	IsLTS        bool

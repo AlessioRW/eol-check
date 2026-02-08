@@ -1,29 +1,26 @@
 package output
 
 import (
+	"bytes"
 	"eol-checker/internal/api"
 	"fmt"
 	"log/slog"
 	"os"
 )
 
-func WriteOut(eolChecks []*api.EolCheck) error {
-	file, err := os.Create("eol-output.csv")
-	if err != nil {
-		slog.Error("error creating output file", "error", err)
-		return err
-	}
+type Client struct {
+}
 
-	defer file.Close()
-
+func Output(outputClient Client, checks []api.EolCheck) error {
+	outBuffer := bytes.Buffer{}
 	headLine := "id,product,version,is_eol,eol_date,maintained,lts\n"
-	_, err = file.Write([]byte(headLine))
+	_, err := outBuffer.Write([]byte(headLine))
 	if err != nil {
 		slog.Error("error writing csv heading line", "error", err)
 		return err
 	}
 
-	for _, check := range eolChecks {
+	for _, check := range checks {
 		fmt.Printf("%+v\n", check)
 		checkLine := fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v\n",
 			check.CheckId,
@@ -35,13 +32,30 @@ func WriteOut(eolChecks []*api.EolCheck) error {
 			check.Current.IsLTS,
 		)
 
-		_, err = file.Write([]byte(checkLine))
+		_, err = outBuffer.Write([]byte(checkLine))
 		if err != nil {
 			slog.Error("error writing check line into csv", "error", err)
 			return err
 		}
+	}
+	return outputClient.Write(outBuffer.Bytes())
+}
 
+func (client Client) Write(outputBuffer []byte) error {
+	file, err := os.Create("eol-output.csv")
+	if err != nil {
+		slog.Error("error creating output file", "error", err)
+		return err
+	}
+
+	defer file.Close()
+
+	_, err = file.Write(outputBuffer)
+	if err != nil {
+		slog.Error("error writing check line into csv", "error", err)
+		return err
 	}
 
 	return nil
+
 }

@@ -11,8 +11,16 @@ import (
 	"log/slog"
 )
 
+const API_URL = "https://endoflife.date/api/v1"
+
 func Run(config *config.EolConfig) error {
-	eolResults := []*api.EolCheck{}
+
+	apiClient := api.Client{
+		URL: API_URL,
+	}
+	outputClient := output.Client{}
+
+	eolResults := []api.EolCheck{}
 	for _, product := range config.Config {
 		p := switchProduct(product.Product)
 
@@ -27,16 +35,15 @@ func Run(config *config.EolConfig) error {
 			return err
 		}
 
-		vData, err := api.Query(product.Id, product.Product, version)
+		vData, err := api.GetData(apiClient, product.Id, product.Product, version)
 		if err != nil {
 			return err
 		}
 
 		eolResults = append(eolResults, vData)
-
 	}
 
-	err := output.WriteOut(eolResults)
+	err := output.Output(outputClient, eolResults)
 	if err != nil {
 		return err
 	}

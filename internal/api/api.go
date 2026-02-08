@@ -8,37 +8,27 @@ import (
 	"net/http"
 )
 
-const API_URL = "https://endoflife.date/api/v1"
+type Client struct {
+	URL string
+}
 
-func Query(id string, product string, version string) (*EolCheck, error) {
-	EolInfo := &EolCheck{
+func GetData(apiClient Client, id string, product string, version string) (EolCheck, error) {
+	EolInfo := EolCheck{
 		CheckId: id,
 		Product: product,
 	}
 
-	res, err := http.Get(fmt.Sprintf("%v/products/%v", API_URL, product))
-	if err != nil {
-		slog.Error("error getting eol info", "error", err)
-		return nil, err
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		slog.Error("error reading response body", "error", err)
-		return nil, err
-	}
-
-	defer res.Body.Close()
-
-	if res.StatusCode != 200 {
-		slog.Error("non-200 status code", "error", err, "body", string(body))
-		return nil, err
-	}
-
 	eolData := &ProductsResponse{}
+
+	body, err := apiClient.Query(product)
+	if err != nil {
+		return EolInfo, err
+	}
+
 	err = json.Unmarshal(body, eolData)
 	if err != nil {
 		slog.Error("error unmarshalling api response", "error", err)
+		return EolInfo, err
 	}
 
 	for i, versionData := range eolData.Result.Releases {
@@ -53,4 +43,26 @@ func Query(id string, product string, version string) (*EolCheck, error) {
 	}
 
 	return EolInfo, nil
+}
+
+func (caller *Client) Query(product string) ([]byte, error) {
+	res, err := http.Get(fmt.Sprintf("%v/products/%v", caller.URL, product))
+	if err != nil {
+		slog.Error("error getting eol info", "error", err)
+		return nil, err
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		slog.Error("error reading response body", "error", err)
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		slog.Error("non-200 status code", "error", err, "body", string(body))
+		return nil, err
+	}
+
+	return body, nil
 }
