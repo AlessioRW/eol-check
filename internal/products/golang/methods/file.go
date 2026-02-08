@@ -7,19 +7,32 @@ import (
 	"strings"
 )
 
+type File struct{}
+
 // product: golang
 // method: file
 // args:
-//	string path
+//	0 - path STRING
 
-type File struct{}
+func parseArgs(args []any) (string, error) {
+	var path string
+	var err error
+	if len(args) != 1 {
+		return "", errors.New("not enough arguments passed into function")
+	}
+	path, ok := args[0].(string)
+	if !ok {
+		return "", errors.New("argument passed as PATH cannot be cast to string")
+	}
+	return path, err
+}
 
 func (m File) Run(id string, args []any) (string, error) {
 	logger := slog.Default().With("product", "golang", "method", "file", "check_id", id)
-	if len(args) < 1 {
-		errorMsg := "not enough arguments passed into function"
-		logger.Error(errorMsg)
-		return "", errors.New(errorMsg)
+	path, err := parseArgs(args)
+	if err != nil {
+		logger.Error("failed to parse argments", "error", err)
+		return "", err
 	}
 
 	path, ok := args[0].(string)

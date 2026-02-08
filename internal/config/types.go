@@ -7,6 +7,6 @@ type EolConfig struct {
 type ProductConfig struct {
 	Id      string `yaml:"id"`
 	Product string `yaml:"product"`
-	Path    string `yaml:"path"`
 	Method  string `yaml:"method"`
+	Args    []any  `yaml:"args"`
 }

@@ -7,9 +7,13 @@ import (
 	"regexp"
 )
 
+// product: golang
+// method: cli
+// args: none
+
 type CLI struct{}
 
-func (c CLI) Run(id string, args []any) (string, error) {
+func (c CLI) Run(id string, _ []any) (string, error) {
 	logger := slog.Default().With("product", "golang", "method", "command", "check_id", id)
 	res := exec.Command("go", "version")
 	if res.Err != nil {

@@ -1,0 +1,12 @@
+
+config:
+  - id: "go-file"
+    product: "golang"
+    method: "file"
+    args:
+      - "./go.mod"
+  - id: "glue-sdk"
+    product: "aws_glue"
+    method: "sdk"
+    args:
+      - "kiglue-nbcu-prod-glue-job-usw2"

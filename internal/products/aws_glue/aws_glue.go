@@ -9,10 +9,11 @@ type Product struct{}
 
 func (g Product) GetMethods() map[string]products.Method {
 	return map[string]products.Method{
-		"cle": aws_glue_methods.CLI{},
+		"cli": aws_glue_methods.CLI{},
+		"sdk": aws_glue_methods.SDK{},
 	}
 }
 
 func (p Product) GetEndpoint() string {
-	return "golang"
+	return "amazon-glue"
 }

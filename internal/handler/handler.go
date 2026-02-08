@@ -5,6 +5,7 @@ import (
 	"eol-checker/internal/config"
 	"eol-checker/internal/output"
 	"eol-checker/internal/products"
+	"eol-checker/internal/products/aws_glue"
 	"eol-checker/internal/products/golang"
 	"errors"
 	"fmt"
@@ -30,12 +31,15 @@ func Run(config *config.EolConfig) error {
 			slog.Error(errMsg)
 			return errors.New(errMsg)
 		}
-		version, err := checkFunc.Run(product.Id, []any{product.Path})
+
+		version, err := checkFunc.Run(product.Id, product.Args)
 		if err != nil {
 			return err
 		}
 
-		vData, err := api.GetData(apiClient, product.Id, product.Product, version)
+		fmt.Println("version", version)
+
+		vData, err := api.GetData(apiClient, product.Id, product.Product, p.GetEndpoint(), version)
 		if err != nil {
 			return err
 		}
@@ -55,6 +59,8 @@ func switchProduct(product string) products.Product {
 	switch product {
 	case "golang":
 		return golang.Product{}
+	case "aws_glue":
+		return aws_glue.Product{}
 	default:
 		return nil
 	}

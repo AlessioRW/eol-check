@@ -21,6 +21,7 @@ func Output(outputClient Client, checks []api.EolCheck) error {
 	}
 
 	for _, check := range checks {
+
 		fmt.Printf("%+v\n", check)
 		checkLine := fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v\n",
 			check.CheckId,
