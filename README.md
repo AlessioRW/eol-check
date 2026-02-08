@@ -69,3 +69,21 @@ Boolean value if the product version being used is still being maintained.
 
 **lts** - 
 Boolean value if the product version being used is receiving long-term support# eol-check
+
+## Structure and Naming
+
+### Product Packages
+
+Each product has it's own package in [`/internal/prodcuts/`](./internal/products/). Inside the product folder exists a `[PRODUCT].go` file which holds a struct which implements the [`Product Interface`](./internal/products/types.go). Each product folder also contains a `methods` folder which has a file per method which implements the  [`Method Interface`](./internal/products/types.go), these file all have the package name `[PRODUCT]_methods`.
+
+> **For example:** Inside `/internal/prodcuts/golang` exists a `golang.go` file which has a `Product` struct which implements the product interface, and a `methods` folder which has files `cli.go` and `file.go`. These method files each contain the logic to determine the version of Golang being used in a project.
+
+### Adding Products and Methods
+
+When adding a **new Product**, you must add the Product's struct/implementation of the Product interface to the [`/internal/handler/switch.go:switchProduct`](./internal/handler/switch.go) function.
+
+When adding a **new Method**, you must add the Method's struct/implementation of the Method interface to the `internal/products/[PRODUCT]/[PRODUCT].go` file in the `GetMethods` function.
+
+### Annotation Methods
+
+Please document the Method in the `[PRODUCT].md` file, and include a block of comments aboce the `Run` function listing the Product, Method, and Args to be passed.
